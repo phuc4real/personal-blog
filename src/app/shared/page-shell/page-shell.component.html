@@ -1,0 +1,46 @@
+<div class="shell">
+  <div class="shell-inner">
+    <aside class="sidebar" aria-label="Site navigation">
+      <a class="logo" routerLink="/" routerLinkActive="is-active" aria-label="Home">
+        <span class="logo-text">PHUC LE</span>
+      </a>
+
+      <nav class="nav">
+        <a
+          class="nav-item"
+          routerLink="/"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          blog
+        </a>
+        <a class="nav-item" routerLink="/about" routerLinkActive="is-active">about</a>
+        <a class="nav-item" routerLink="/project" routerLinkActive="is-active">project</a>
+        <a class="nav-item" routerLink="/contact" routerLinkActive="is-active">contact</a>
+      </nav>
+      
+    </aside>
+
+    <section class="main" aria-label="Content">
+      <div class="main-frame">
+        <button class="corner corner--top" type="button" (click)="goBack()">
+          BACK
+        </button>
+
+        <div class="content">
+          <ng-content></ng-content>
+        </div>
+
+        <footer class="footer" aria-label="Site footer">
+          © 2026 @phuc4real
+        </footer>
+
+        <button class="corner corner--bottom" type="button" (click)="scrollToTop()" aria-label="Scroll to top">
+          ▲<br />TOP
+        </button>
+      </div>
+    </section>
+
+    <div class="right-void" aria-hidden="true"></div>
+  </div>
+</div>

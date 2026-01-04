@@ -34,7 +34,7 @@ type BlogPost = {
         <section class="article" aria-label="article events">
           <h2 class="article-title">new post</h2>
 
-          @for (post of posts; track post.slug) {
+          @for (post of posts; track post.slug; let isFirst = $first) {
             <article class="event" [id]="post.slug" aria-label="Event post">
               <p class="event-date">{{ post.dateLabel }}</p>
               <h3 class="event-title">{{ post.title }}</h3>
@@ -45,7 +45,7 @@ type BlogPost = {
                   width="300"
                   height="420"
                   [alt]="post.imageAlt"
-                  [priority]="post.slug === 'neon-blast'"
+                  [priority]="isFirst"
                 />
               </figure>
 
@@ -89,7 +89,7 @@ type BlogPost = {
     .whats-new {
       border: 1px solid color-mix(in srgb, var(--purple-muted) 80%, transparent);
       padding: 10px 16px;
-      max-width: 520px;
+      max-width: var(--content-max);
       margin: 0 0 26px;
     }
 
@@ -131,12 +131,8 @@ type BlogPost = {
     }
 
     .event {
-      max-width: 520px;
+      max-width: var(--content-max);
       margin: 0 0 40px;
-    }
-
-    .event:last-child {
-      margin-bottom: 0;
     }
 
     .event-date {
@@ -191,7 +187,7 @@ type BlogPost = {
     }
 
     .post-blur {
-      max-width: 520px;
+      max-width: var(--content-max);
       height: 1px;
       margin: 12px 0 24px;
       background: linear-gradient(
@@ -219,23 +215,6 @@ type BlogPost = {
 
     .event-paragraph {
       margin-bottom: 12px;
-    }
-
-    .section {
-      margin-bottom: 50px;
-
-      &:last-child {
-        margin-bottom: 0;
-      }
-    }
-
-    .section-title {
-      font-size: 34px;
-      font-weight: 950;
-      color: var(--neon-magenta);
-      margin-bottom: 24px;
-      line-height: 1.2;
-      letter-spacing: 0.8px;
     }
 
     .section-text {

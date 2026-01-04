@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0a0a" />
+      <stop offset="100%" stop-color="#1a1a1a" />
+    </linearGradient>
+    <clipPath id="glitch-cut-icon">
+      <rect x="0" y="0" width="512" height="256" />
+    </clipPath>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Audiowide&amp;display=swap');
+      .text {
+        font-family: 'Audiowide', sans-serif;
+        font-weight: 900;
+        font-size: 360px;
+        text-anchor: middle;
+      }
+    </style>
+  </defs>
+  
+  <rect width="512" height="512" rx="64" fill="url(#bg-gradient)" />
+  
+  <!-- Cyan offset -->
+  <text x="266" y="380" class="text" fill="#00afec" opacity="0.8">P</text>
+  
+  <!-- Magenta Main -->
+  <text x="256" y="380" class="text" fill="#ff2b9f">P</text>
+  
+  <!-- White Slice -->
+  <text x="246" y="380" class="text" fill="#ffffff" clip-path="url(#glitch-cut-icon)">P</text>
+</svg>

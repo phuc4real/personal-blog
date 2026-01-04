@@ -34,7 +34,7 @@ type ProjectLink = {
     </app-page-shell>
   `,
   styles: `
-    .page { max-width: 520px; }
+    .page { max-width: var(--content-max); }
 
     .title {
       font-size: 34px;

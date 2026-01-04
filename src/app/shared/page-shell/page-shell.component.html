@@ -2,7 +2,19 @@
   <div class="shell-inner">
     <aside class="sidebar" aria-label="Site navigation">
       <a class="logo" routerLink="/" routerLinkActive="is-active" aria-label="Home">
-        <span class="logo-text">PHUC LE</span>
+        <svg width="200" height="42" viewBox="0 0 200 42" aria-hidden="true" style="display: block; overflow: visible; margin-top: 10px;">
+          <defs>
+            <clipPath id="glitch-cut">
+              <rect x="0" y="0" width="200" height="20" />
+            </clipPath>
+          </defs>
+          <!-- Cyan offset (Glitch) -->
+          <text x="3" y="32" font-family="var(--font-logo)" font-weight="900" font-size="32" fill="var(--accent-cyan)" opacity="0.8" style="letter-spacing: 2px;">PHUC LE</text>
+          <!-- Magenta Main -->
+          <text x="0" y="32" font-family="var(--font-logo)" font-weight="900" font-size="32" fill="var(--neon-magenta)" style="letter-spacing: 2px;">PHUC LE</text>
+          <!-- Top half slice offset -->
+          <text x="-2" y="32" font-family="var(--font-logo)" font-weight="900" font-size="32" fill="var(--text-white)" clip-path="url(#glitch-cut)" style="letter-spacing: 2px;">PHUC LE</text>
+        </svg>
       </a>
 
       <nav class="nav">
@@ -27,9 +39,9 @@
           BACK
         </button>
 
-        <div class="content">
+        <main class="content">
           <ng-content></ng-content>
-        </div>
+        </main>
 
         <footer class="footer" aria-label="Site footer">
           © 2026 @phuc4real

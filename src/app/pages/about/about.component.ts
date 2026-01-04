@@ -26,7 +26,7 @@ import { PageShellComponent } from '../../shared/page-shell/page-shell.component
     </app-page-shell>
   `,
   styles: `
-    .page { max-width: 520px; }
+    .page { max-width: var(--content-max); }
     .title {
       font-size: 34px;
       font-weight: 950;

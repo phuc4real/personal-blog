@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, PLATFORM_ID, inject } from '@angular/core';
-import { Location, isPlatformBrowser } from '@angular/common';
+import { DOCUMENT, Location, isPlatformBrowser } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
@@ -12,6 +12,25 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 export class PageShellComponent {
   private location = inject(Location);
   private platformId = inject(PLATFORM_ID);
+  private document = inject(DOCUMENT);
+
+  constructor() {
+    if (isPlatformBrowser(this.platformId)) {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        this.document.documentElement.setAttribute('data-theme', savedTheme);
+      }
+    }
+  }
+
+  toggleTheme(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      const currentTheme = this.document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      this.document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+    }
+  }
 
   goBack(): void {
     this.location.back();

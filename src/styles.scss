@@ -1,11 +1,16 @@
 /* Global dark/neon theme */
 :root {
+  /* Semantic Theme Variables (Default: Dark) */
+  --bg-page: #000000;
+  --text-main: #ffffff;
+  --grid-line: rgba(255, 255, 255, 0.03);
+  
   /* Colors */
-  --bg-black: #000000;
+  --bg-black: var(--bg-page); /* Mapped for backward compatibility */
   --neon-magenta: #ff2b9f;
   --purple-muted: #7e3c93;
   --accent-cyan: #00afec;
-  --text-white: #ffffff;
+  --text-white: var(--text-main); /* Mapped for backward compatibility */
   --text-dim: #6b6b6b;
   --divider: #1a1a1a;
 
@@ -46,6 +51,15 @@
   --text-xs: 10px;
 }
 
+[data-theme="light"] {
+  --bg-page: wheat;
+  --text-main: #1a1a1a;
+  --grid-line: rgba(0, 0, 0, 0.05);
+  --divider: rgba(0, 0, 0, 0.1);
+  --text-dim: #4a4a4a;
+  --purple-muted: #6a327a; /* Slightly darker for contrast on light bg */
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -54,8 +68,14 @@
 
 html, body {
   height: 100%;
-  background: var(--bg-black);
-  color: var(--text-white);
+  background-color: var(--bg-page);
+  background-image:
+    radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--purple-muted) 15%, transparent), transparent 70%),
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 100% 100%, 40px 40px, 40px 40px;
+  background-attachment: fixed;
+  color: var(--text-main);
   font-family: var(--font-primary);
   font-size: var(--text-sm);
   line-height: 1.6;

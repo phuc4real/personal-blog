@@ -1,21 +1,11 @@
-import { NgOptimizedImage } from '@angular/common';
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { PageShellComponent } from '../../shared/page-shell/page-shell.component';
-
-type BlogPost = {
-  readonly slug: string;
-  readonly title: string;
-  readonly dateKey: string;
-  readonly dateLabel: string;
-  readonly imagePath: string;
-  readonly imageAlt: string;
-  readonly metaLines: readonly string[];
-  readonly body: readonly string[];
-};
+import { BlogService } from '../../shared/services/blog.service';
 
 @Component({
   selector: 'app-home',
-  imports: [NgOptimizedImage, PageShellComponent],
+  imports: [PageShellComponent, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-page-shell>
@@ -23,9 +13,9 @@ type BlogPost = {
         <section class="whats-new" aria-label="whats-new">
           <h1 class="info-title">what's new</h1>
           <ul class="info-list" aria-label="Top posts">
-            @for (post of topPosts; track post.slug) {
+            @for (post of topPosts(); track post.slug) {
               <li class="info-item">
-                <a class="info-link" [attr.href]="'#' + post.slug">{{ post.dateKey }} | {{ post.title }}</a>
+                <a class="info-link" [routerLink]="['/post', post.slug]">{{ post.dateKey }} | {{ post.title }}</a>
               </li>
             }
           </ul>
@@ -34,43 +24,21 @@ type BlogPost = {
         <section class="article" aria-label="article events">
           <h2 class="article-title">new post</h2>
 
-          @for (post of posts; track post.slug; let isFirst = $first) {
+          @for (post of posts(); track post.slug; let isFirst = $first) {
             <article class="event" [id]="post.slug" aria-label="Event post">
-              <p class="event-date">{{ post.dateLabel }}</p>
+              <p class="event-date">{{ formatDate(post.dateKey) }}</p>
               <h3 class="event-title">{{ post.title }}</h3>
 
-              <figure class="event-poster">
-                <img
-                  [ngSrc]="post.imagePath"
-                  width="300"
-                  height="420"
-                  [alt]="post.imageAlt"
-                  [priority]="isFirst"
-                />
-              </figure>
+              <div class="event-body">
+                <p class="section-text event-paragraph">{{ post.preview }}</p>
 
-              <div class="event-body" [id]="'post-body-' + post.slug">
-                @for (line of post.metaLines; track line) {
-                  <p class="event-line">{{ line }}</p>
-                }
-
-                <div class="event-divider" aria-hidden="true"></div>
-
-                @for (paragraph of bodyToRender(post); track paragraph) {
-                  <p class="section-text event-paragraph">{{ paragraph }}</p>
-                }
-
-                @if (showMoreButton(post)) {
-                  <button
-                    class="more"
-                    type="button"
-                    (click)="expandPost(post.slug)"
-                    [attr.aria-controls]="'post-body-' + post.slug"
-                    [attr.aria-expanded]="isExpanded(post.slug)"
-                  >
-                    MORE
-                  </button>
-                }
+                <a
+                  class="more"
+                  [routerLink]="['/post', post.slug]"
+                  [attr.aria-label]="'Read more about ' + post.title"
+                >
+                  MORE
+                </a>
               </div>
             </article>
 
@@ -114,6 +82,7 @@ type BlogPost = {
       color: color-mix(in srgb, var(--neon-magenta) 85%, var(--text-white));
       font-size: 11px;
       letter-spacing: 0.3px;
+      cursor: pointer;
     }
 
     .info-link:hover {
@@ -168,6 +137,7 @@ type BlogPost = {
     }
 
     .more {
+      display: inline-block;
       margin-top: 10px;
       border: 1px solid color-mix(in srgb, var(--divider) 80%, transparent);
       background: transparent;
@@ -178,6 +148,7 @@ type BlogPost = {
       padding: 8px 12px;
       cursor: pointer;
       text-transform: uppercase;
+      text-decoration: none;
     }
 
     .more:hover {
@@ -240,90 +211,21 @@ type BlogPost = {
   `]
 })
 export class HomeComponent {
-  private readonly previewParagraphCount = 2;
-  private readonly expandedSlugs = signal<ReadonlySet<string>>(new Set());
+  private readonly blogService = inject(BlogService);
 
-  readonly posts: readonly BlogPost[] = [
-    {
-      slug: 'neon-blast',
-      title: 'Neon Blast',
-      dateKey: '20260104',
-      dateLabel: '2026.01.04',
-      imagePath: 'assets/poster.svg',
-      imageAlt: 'Event poster placeholder with neon styling',
-      metaLines: [
-        'OPEN: 15:00  /  CLOSE: 21:00',
-        'DOOR: ¥1300 + 1Drink',
-        'DJs: Lorem / Ipsum / Dolor / Sit',
-      ],
-      body: [
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.',
-        'Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris.',
-        'Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla.',
-        'Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.',
-      ]
-    },
-    {
-      slug: 'purple-shift',
-      title: 'Purple Shift',
-      dateKey: '20260102',
-      dateLabel: '2026.01.02',
-      imagePath: 'assets/poster.svg',
-      imageAlt: 'Event poster placeholder with neon styling',
-      metaLines: [
-        'OPEN: 18:00  /  CLOSE: 23:00',
-        'DOOR: ¥1500 + 1Drink',
-        'LIVE: Consectetur / Adipiscing',
-      ],
-      body: [
-        'Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.',
-        'Curabitur sodales ligula in libero. Sed dignissim lacinia nunc. Curabitur tortor. Pellentesque nibh.',
-      ]
-    },
-    {
-      slug: 'midnight-arcade',
-      title: 'Midnight Arcade',
-      dateKey: '20251229',
-      dateLabel: '2025.12.29',
-      imagePath: 'assets/poster.svg',
-      imageAlt: 'Event poster placeholder with neon styling',
-      metaLines: [
-        'OPEN: 20:00  /  CLOSE: 02:00',
-        'DOOR: ¥1200 + 1Drink',
-        'GUESTS: Amet / Elit / Nisi',
-      ],
-      body: [
-        'Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet.',
-        'Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa.',
-        'Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra.',
-        'Curabitur sodales ligula in libero. Sed dignissim lacinia nunc. Curabitur tortor. Pellentesque nibh.',
-        'Aenean quam. In scelerisque sem at dolor. Maecenas mattis. Sed convallis tristique sem.',
-        'Proin ut ligula vel nunc egestas porttitor. Morbi lectus risus, iaculis vel, suscipit quis, luctus non, massa.',
-      ]
-    }
-  ];
+  readonly posts = this.blogService.posts;
 
-  readonly topPosts: readonly BlogPost[] = [...this.posts]
-    .sort((a, b) => b.dateKey.localeCompare(a.dateKey))
-    .slice(0, 3);
+  readonly topPosts = computed(() => 
+    [...this.posts()]
+      .sort((a, b) => b.dateKey.localeCompare(a.dateKey))
+      .slice(0, 3)
+  );
 
-  isExpanded(slug: string): boolean {
-    return this.expandedSlugs().has(slug);
-  }
-
-  showMoreButton(post: BlogPost): boolean {
-    return post.body.length > this.previewParagraphCount && !this.isExpanded(post.slug);
-  }
-
-  expandPost(slug: string): void {
-    this.expandedSlugs.update((previous) => {
-      const next = new Set(previous);
-      next.add(slug);
-      return next;
-    });
-  }
-
-  bodyToRender(post: BlogPost): readonly string[] {
-    return this.isExpanded(post.slug) ? post.body : post.body.slice(0, this.previewParagraphCount);
+  formatDate(dateKey: string): string {
+    if (dateKey.length !== 8) return dateKey;
+    const year = dateKey.slice(0, 4);
+    const month = dateKey.slice(4, 6);
+    const day = dateKey.slice(6, 8);
+    return `${year}.${month}.${day}`;
   }
 }

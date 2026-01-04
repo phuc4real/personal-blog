@@ -17,8 +17,11 @@ import { PageShellComponent } from '../../shared/page-shell/page-shell.component
         <h2 class="subtitle">what you’ll find here</h2>
         <ul class="list">
           <li class="item">Short write-ups on projects</li>
-          <li class="item">Frontend experiments (Angular, UI, accessibility)</li>
           <li class="item">Learning notes and references</li>
+          <li class="item">New tech experiments</li>
+          <li class="item">My personal anime thoughts, and reviews</li>
+          <li class="item">Random thoughts</li>
+          <li class="item">And more...</li>
         </ul>
 
         <p class="text dim">Last updated: 2026-01-02</p>

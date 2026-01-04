@@ -44,7 +44,6 @@
   display: block;
   padding: var(--space-1) var(--space-3);
   margin-left: -10px;
-  margin-right: -10px;
   border-radius: var(--radius-sm);
 
   &:hover {
@@ -55,6 +54,14 @@
   &.is-active {
     color: var(--purple-muted);
   }
+}
+
+.theme-toggle {
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  align-self: start;
 }
 
 .main {

@@ -38,6 +38,7 @@ import { PageShellComponent } from '../../shared/page-shell/page-shell.component
             </tr>
           </tbody>
         </table>
+        <p class="text dim">Last updated: 2026-01-02</p>
       </article>
     </app-page-shell>
   `,

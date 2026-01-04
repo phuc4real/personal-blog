@@ -56,7 +56,9 @@
                 }
               ],
               "outputHashing": "all",
-              "namedChunks": false
+              "namedChunks": false,
+              "extractLicenses": true,
+              "sourceMap": false
             },
             "development": {
               "optimization": false,

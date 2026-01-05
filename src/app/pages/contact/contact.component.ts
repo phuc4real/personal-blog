@@ -36,6 +36,12 @@ import { PageShellComponent } from '../../shared/page-shell/page-shell.component
                 <a class="link" href="https://github.com/phuc4real" target="_blank" rel="noopener">github.com/phuc4real</a>
               </td>
             </tr>
+            <tr class="row">
+              <th class="label" scope="row">myanimelist</th>
+              <td class="value">
+                <a class="link" href="https://myanimelist.net/profile/phucscl" target="_blank" rel="noopener">myanimelist.net/profile/phucscl</a>
+              </td>
+            </tr>
           </tbody>
         </table>
         <p class="text dim">Last updated: 2026-01-02</p>

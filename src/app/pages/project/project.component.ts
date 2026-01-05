@@ -89,14 +89,9 @@ type ProjectLink = {
 export class ProjectComponent {
   readonly projects: readonly ProjectLink[] = [
     {
-      name: 'pet-project-1',
-      url: 'https://github.com/phuc4real/pet-project-1',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-    },
-    {
-      name: 'pet-project-2',
-      url: 'https://github.com/phuc4real/pet-project-2',
-      description: 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+      name: 'personal-blog',
+      url: 'https://github.com/phuc4real/personal-blog',
+      description: 'A minimal, cyberpunk-themed personal blog built with Angular 19+. Features markdown-based posts, dark/light mode toggle, and optimized performance.'
     }
   ];
 }

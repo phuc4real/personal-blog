@@ -1,8 +1,8 @@
 /* Global dark/neon theme */
 :root {
   /* Semantic Theme Variables (Default: Dark) */
-  --bg-page: #000000;
-  --text-main: #ffffff;
+  --bg-page: #0a0a0f; /* Tinted toward purple-blue for cinematic depth */
+  --text-main: #fafaff; /* Subtle cool tint for softer contrast */
   --grid-line: rgba(255, 255, 255, 0.03);
   
   /* Colors */
@@ -13,10 +13,34 @@
   --text-white: var(--text-main); /* Mapped for backward compatibility */
   --text-dim: #6b6b6b;
   --divider: #1a1a1a;
+  
+  /* Derived Color Tokens - Extracted from repeated color-mix expressions */
+  --text-magenta-bright: color-mix(in srgb, var(--neon-magenta) 85%, var(--text-white));
+  --text-magenta-medium: color-mix(in srgb, var(--neon-magenta) 80%, var(--text-white));
+  --text-magenta-soft: color-mix(in srgb, var(--neon-magenta) 70%, var(--purple-muted));
+  --text-cyan-medium: color-mix(in srgb, var(--accent-cyan) 65%, var(--text-white));
+  --border-purple-soft: color-mix(in srgb, var(--purple-muted) 80%, transparent);
+  --border-divider-soft: color-mix(in srgb, var(--divider) 70%, transparent);
+  --gradient-cyan-soft: color-mix(in srgb, var(--accent-cyan) 6%, transparent);
+  --glow-purple-ambient: color-mix(in srgb, var(--purple-muted) 15%, transparent);
+  
+  /* Performance: Pre-calculated color-mix values for frequently used effects */
+  --glow-magenta: color-mix(in srgb, var(--neon-magenta) 30%, transparent);
+  --glow-cyan: color-mix(in srgb, var(--accent-cyan) 30%, transparent);
+  --bg-purple-subtle: color-mix(in srgb, var(--purple-muted) 3%, transparent);
+  --bg-cyan-subtle: color-mix(in srgb, var(--accent-cyan) 3%, transparent);
+  --bg-magenta-subtle: color-mix(in srgb, var(--neon-magenta) 5%, transparent);
+  --border-divider-strong: color-mix(in srgb, var(--divider) 80%, transparent);
+  --divider-muted: color-mix(in srgb, var(--divider) 70%, transparent);
+  --text-cyan-dim: color-mix(in srgb, var(--accent-cyan) 55%, var(--text-dim));
+  --text-magenta-list: color-mix(in srgb, var(--neon-magenta) 75%, var(--text-white));
 
-  /* Motion */
+  /* Motion - Atmospheric transitions for lo-fi cyberpunk */
   --ease-standard: ease;
+  --ease-atmospheric: cubic-bezier(0.16, 1, 0.3, 1); /* Exponential ease-out for ambient feel */
+  --dur-instant: 100ms;
   --dur-fast: 200ms;
+  --dur-ambient: 300ms;
 
   /* Layout */
   --sidebar-width: 220px;
@@ -52,12 +76,20 @@
 }
 
 [data-theme="light"] {
-  --bg-page: wheat;
-  --text-main: #1a1a1a;
-  --grid-line: rgba(0, 0, 0, 0.05);
-  --divider: rgba(0, 0, 0, 0.1);
-  --text-dim: #4a4a4a;
+  /* Lo-fi cyberpunk light mode - maintains aesthetic continuity */
+  --bg-page: #f5f3ff; /* Pale lavender for soft cyberpunk palette */
+  --text-main: #1a1a28; /* Dark purple-tinted text */
+  --grid-line: rgba(126, 60, 147, 0.08); /* Purple-tinted grid */
+  --divider: rgba(126, 60, 147, 0.15);
+  --text-dim: #6a5a7a; /* Purple-grey for hierarchy */
   --purple-muted: #6a327a; /* Slightly darker for contrast on light bg */
+  
+  /* Adjust derived tokens for light mode */
+  --text-magenta-bright: color-mix(in srgb, var(--neon-magenta) 75%, var(--text-main));
+  --text-magenta-medium: color-mix(in srgb, var(--neon-magenta) 70%, var(--text-main));
+  --text-magenta-soft: color-mix(in srgb, var(--neon-magenta) 60%, var(--purple-muted));
+  --text-cyan-medium: color-mix(in srgb, var(--accent-cyan) 60%, var(--text-main));
+  --glow-purple-ambient: color-mix(in srgb, var(--purple-muted) 8%, transparent);
 }
 
 * {
@@ -70,7 +102,7 @@ html, body {
   height: 100%;
   background-color: var(--bg-page);
   background-image:
-    radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--purple-muted) 15%, transparent), transparent 70%),
+    radial-gradient(circle at 50% 0%, var(--glow-purple-ambient), transparent 70%),
     linear-gradient(var(--grid-line) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size: 100% 100%, 40px 40px, 40px 40px;
@@ -90,7 +122,8 @@ body {
 a {
   color: var(--purple-muted);
   text-decoration: none;
-  transition: color var(--dur-fast) var(--ease-standard);
+  transition: color var(--dur-ambient) var(--ease-atmospheric),
+              background-color var(--dur-ambient) var(--ease-atmospheric);
 
   &:hover {
     color: var(--neon-magenta);
@@ -107,9 +140,46 @@ textarea {
 
 button {
   background: none;
+  transition: color var(--dur-ambient) var(--ease-atmospheric),
+              background-color var(--dur-ambient) var(--ease-atmospheric),
+              border-color var(--dur-ambient) var(--ease-atmospheric),
+              box-shadow var(--dur-ambient) var(--ease-atmospheric),
+              transform var(--dur-ambient) var(--ease-atmospheric);
 }
 
 :focus-visible {
   outline: 2px solid var(--neon-magenta);
   outline-offset: 2px;
+}
+
+/* Reduced Motion Support - Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Text Overflow Utilities - Hardening */
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.line-clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.wrap-text {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
 }

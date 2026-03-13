@@ -1,3 +1,21 @@
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--neon-magenta);
+  color: var(--bg-black);
+  padding: 8px 16px;
+  text-decoration: none;
+  font-weight: 800;
+  font-size: 14px;
+  z-index: 100;
+  transition: top var(--dur-fast) var(--ease-atmospheric);
+
+  &:focus {
+    top: 0;
+  }
+}
+
 .shell {
   background: var(--bg-black);
   color: var(--text-white);
@@ -17,6 +35,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-7);
+  contain: layout style; /* Performance: isolate sidebar rendering */
 }
 
 
@@ -36,23 +55,35 @@
 .nav-item {
   color: var(--purple-muted);
   text-decoration: none;
-  font-size: 26px;
+  font-size: clamp(1.25rem, 2vw + 0.5rem, 1.625rem); /* Fluid 20px-26px */
   line-height: 0.92;
   font-weight: 800;
   letter-spacing: 0.5px;
   text-transform: lowercase;
   display: block;
   padding: var(--space-1) var(--space-3);
+  min-height: 44px;
   margin-left: -10px;
   border-radius: var(--radius-sm);
+  transition: color var(--dur-ambient) var(--ease-atmospheric),
+              background-color var(--dur-ambient) var(--ease-atmospheric),
+              box-shadow var(--dur-ambient) var(--ease-atmospheric),
+              transform var(--dur-ambient) var(--ease-atmospheric);
 
   &:hover {
     background: var(--neon-magenta);
     color: var(--bg-black);
+    box-shadow: 0 0 16px var(--glow-magenta);
+    transform: translateX(2px);
+  }
+
+  &:active {
+    transform: translateX(0);
   }
 
   &.is-active {
     color: var(--purple-muted);
+    text-shadow: 0 0 10px var(--glow-purple-ambient);
   }
 }
 
@@ -78,20 +109,21 @@
   background-image:
     linear-gradient(
       180deg,
-      color-mix(in srgb, var(--accent-cyan) 6%, transparent),
+      var(--gradient-cyan-soft),
       transparent 45%
     ),
     repeating-linear-gradient(
       90deg,
       transparent,
       transparent 18px,
-      color-mix(in srgb, var(--divider) 75%, transparent) 19px
+      var(--divider-muted) 19px
     );
 }
 
 .content {
   max-width: var(--content-max);
   width: 100%;
+  contain: layout style; /* Performance: isolate content rendering */
 }
 
 .footer {
@@ -111,11 +143,20 @@
   font-weight: 800;
   letter-spacing: 1px;
   cursor: pointer;
+  min-width: 44px;
+  min-height: 44px;
   padding: var(--space-2);
   text-align: center;
+  transition: color var(--dur-ambient) var(--ease-atmospheric),
+              transform var(--dur-ambient) var(--ease-atmospheric);
 
   &:hover {
     color: var(--purple-muted);
+    transform: translateY(-1px); /* GPU-accelerated */
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 }
 

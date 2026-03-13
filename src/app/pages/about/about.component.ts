@@ -31,7 +31,7 @@ import { PageShellComponent } from '../../shared/page-shell/page-shell.component
   styles: `
     .page { max-width: var(--content-max); }
     .title {
-      font-size: 34px;
+      font-size: clamp(1.75rem, 4vw + 1rem, 2.125rem); /* Fluid 28px-34px */
       font-weight: 950;
       color: var(--neon-magenta);
       margin: 0 0 18px;
@@ -48,7 +48,7 @@ import { PageShellComponent } from '../../shared/page-shell/page-shell.component
     .text {
       font-size: 14px;
       line-height: 1.9;
-      color: color-mix(in srgb, var(--neon-magenta) 80%, var(--text-white));
+      color: var(--text-magenta-medium);
       margin: 0 0 14px;
     }
     .text.dim { color: var(--text-dim); }
@@ -57,7 +57,7 @@ import { PageShellComponent } from '../../shared/page-shell/page-shell.component
     .item {
       font-size: 14px;
       line-height: 1.9;
-      color: color-mix(in srgb, var(--neon-magenta) 75%, var(--text-white));
+      color: var(--text-magenta-list);
       margin: 6px 0;
     }
   `

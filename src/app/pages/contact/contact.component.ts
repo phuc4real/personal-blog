@@ -18,10 +18,10 @@ import { PageShellComponent } from '../../shared/page-shell/page-shell.component
 
         <table class="table" aria-label="Contact links">
           <tbody>
-               <tr class="row">
+            <tr class="row">
               <th class="label" scope="row">Facebook</th>
               <td class="value">
-                <a class="link" href="https://www.facebook.com/phucscl">facebook.com/phucscl</a>
+                <a class="link" href="https://www.facebook.com/phucscl" target="_blank" rel="noopener">facebook.com/phucscl</a>
               </td>
             </tr>
             <tr class="row">
@@ -37,7 +37,7 @@ import { PageShellComponent } from '../../shared/page-shell/page-shell.component
               </td>
             </tr>
             <tr class="row">
-              <th class="label" scope="row">myanimelist</th>
+              <th class="label" scope="row">MyAnimeList</th>
               <td class="value">
                 <a class="link" href="https://myanimelist.net/profile/phucscl" target="_blank" rel="noopener">myanimelist.net/profile/phucscl</a>
               </td>
@@ -53,7 +53,7 @@ import { PageShellComponent } from '../../shared/page-shell/page-shell.component
         max-width: 520px; 
     }
     .title {
-      font-size: 34px;
+      font-size: clamp(1.75rem, 4vw + 1rem, 2.125rem); /* Fluid 28px-34px */
       font-weight: 950;
       color: var(--neon-magenta);
       margin: 0 0 18px;
@@ -66,7 +66,7 @@ import { PageShellComponent } from '../../shared/page-shell/page-shell.component
       color: var(--accent-cyan);
       margin: 0 0 14px;
     }
-    .text.dim { color: color-mix(in srgb, var(--accent-cyan) 55%, var(--text-dim)); }
+    .text.dim { color: var(--text-cyan-dim); }
 
     .table {
       width: 100%;
@@ -102,17 +102,20 @@ import { PageShellComponent } from '../../shared/page-shell/page-shell.component
       text-underline-offset: 5px;
       display: inline-block;
       max-width: 100%;
-      overflow-wrap: anywhere;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      transition: color var(--dur-ambient) var(--ease-atmospheric),
+                  background-color var(--dur-ambient) var(--ease-atmospheric),
+                  box-shadow var(--dur-ambient) var(--ease-atmospheric);
     }
-    .link:hover { background: var(--neon-magenta); color: var(--bg-black); }
+    .link:hover,
+    .link:focus-visible {
+      background: var(--neon-magenta); 
+      color: var(--bg-black);
+      box-shadow: 0 0 12px var(--glow-magenta);
+    }
 
-    @media (max-width: 420px) {
-      .table {
-        border: 0;
-        border-collapse: separate;
-        border-spacing: 0;
-      }
-
+    @media (max-width: 640px) {
       .row {
         display: block;
         border: 1px solid var(--purple-muted);

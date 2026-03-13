@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, PLATFORM_ID, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, PLATFORM_ID, inject, signal } from '@angular/core';
 import { DOCUMENT, Location, isPlatformBrowser } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
@@ -14,10 +14,13 @@ export class PageShellComponent {
   private platformId = inject(PLATFORM_ID);
   private document = inject(DOCUMENT);
 
+  readonly currentTheme = signal<'dark' | 'light'>('dark');
+
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
       const savedTheme = localStorage.getItem('theme');
-      if (savedTheme) {
+      if (savedTheme === 'light' || savedTheme === 'dark') {
+        this.currentTheme.set(savedTheme);
         this.document.documentElement.setAttribute('data-theme', savedTheme);
       }
     }
@@ -25,8 +28,8 @@ export class PageShellComponent {
 
   toggleTheme(): void {
     if (isPlatformBrowser(this.platformId)) {
-      const currentTheme = this.document.documentElement.getAttribute('data-theme');
-      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      const newTheme = this.currentTheme() === 'light' ? 'dark' : 'light';
+      this.currentTheme.set(newTheme);
       this.document.documentElement.setAttribute('data-theme', newTheme);
       localStorage.setItem('theme', newTheme);
     }
@@ -38,7 +41,11 @@ export class PageShellComponent {
 
   scrollToTop(): void {
     if (isPlatformBrowser(this.platformId)) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ 
+        top: 0, 
+        behavior: prefersReducedMotion ? 'auto' : 'smooth' 
+      });
     }
   }
 }

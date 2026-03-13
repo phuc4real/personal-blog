@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, effect, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal } from '@angular/core';
 import { PageShellComponent } from '../../shared/page-shell/page-shell.component';
 import { BlogService } from '../../shared/services/blog.service';
+import { Router } from '@angular/router';
 import type { BlogPost } from '../../shared/utils/markdown';
 
 @Component({
@@ -9,109 +10,91 @@ import type { BlogPost } from '../../shared/utils/markdown';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-page-shell>
+      @if (loading()) {
+        <div role="status" aria-live="polite" class="loading-state">
+          <p class="loading-text">Loading post...</p>
+        </div>
+      }
+
+      @if (error()) {
+        <div role="alert" aria-live="assertive" class="error-state">
+          <h1 class="error-title">{{ error() === 'Post not found' ? 'Post Not Found' : 'Failed to Load Post' }}</h1>
+          <p class="error-message">{{ error() }}</p>
+          @if (error() !== 'Post not found') {
+            <button class="retry-button" (click)="loadPost()" type="button" [disabled]="loading()">
+              Try Again
+            </button>
+          }
+        </div>
+      }
+
       @if (post(); as post) {
-        <article class="event" [id]="post.slug" aria-label="Event post">
+        <article class="event" [id]="post.slug" [attr.aria-label]="'Post: ' + post.title">
           <p class="event-date">{{ formatDate(post.dateKey) }}</p>
           <h1 class="event-title">{{ post.title }}</h1>
 
           <div class="event-body">
-            @for (paragraph of parseBody(post.body); track paragraph) {
+            @for (paragraph of parsedBody(); track $index) {
               <p class="section-text event-paragraph">{{ paragraph }}</p>
             }
           </div>
         </article>
-      } @else {
-        <p class="section-text">Loading...</p>
       }
     </app-page-shell>
   `,
   styles: [`
     .event {
-      max-width: var(--content-max);
-      margin: 0 0 40px;
       color: var(--text-white);
-    }
-
-    .event-date {
-      margin: 0 0 6px;
-      font-size: 12px;
-      color: color-mix(in srgb, var(--neon-magenta) 70%, var(--purple-muted));
-      letter-spacing: 0.6px;
-    }
-
-    .event-title {
-      margin: 0 0 14px;
-      font-size: 34px;
-      font-weight: 950;
-      color: var(--neon-magenta);
-      line-height: 1.1;
-      letter-spacing: 0.8px;
-    }
-
-    .event-poster {
-      margin: 0 0 14px;
-      border: 1px solid color-mix(in srgb, var(--divider) 70%, transparent);
-      background: var(--bg-black);
-    }
-
-    .event-poster img {
-      display: block;
-      width: 100%;
-      height: auto;
-    }
-
-    .event-body {
-      font-size: 14px;
-    }
-
-    .event-paragraph {
-      margin-bottom: 12px;
-    }
-
-    .section-text {
-      font-size: 14px;
-      line-height: 1.9;
-      color: color-mix(in srgb, var(--neon-magenta) 80%, var(--text-white));
-      margin-bottom: 16px;
-    }
-
-    @media (max-width: 768px) {
-      .event-title {
-        font-size: 26px;
-      }
-      .whats-new {
-        padding: 10px 12px;
-      }
-      .event-body {
-        font-size: 14px;
-      }
     }
   `]
 })
 export class PostDetailComponent {
   private readonly blogService = inject(BlogService);
-  
+  private readonly router = inject(Router);
+  private loadId = 0;
+
   readonly slug = input.required<string>();
   readonly post = signal<BlogPost | null>(null);
+  readonly loading = signal<boolean>(true);
+  readonly error = signal<string | null>(null);
+
+  /** Derived from post signal — avoids re-running on every change detection cycle. */
+  readonly parsedBody = computed(() => {
+    const p = this.post();
+    return p ? p.body.split('\n\n').filter(para => para.trim()) : [];
+  });
 
   constructor() {
     effect(() => {
-      const currentSlug = this.slug();
-      this.blogService.getPostBySlug(currentSlug).then(
-        (post) => this.post.set(post)
-      );
+      this.slug();
+      this.loadPost();
     });
   }
 
+  async loadPost(): Promise<void> {
+    // Stale-response guard: if the slug changed while a fetch was in flight,
+    // discard the older response when it arrives.
+    const id = ++this.loadId;
+
+    this.loading.set(true);
+    this.error.set(null);
+    this.post.set(null);
+
+    const currentSlug = this.slug();
+    const { post, error } = await this.blogService.getPostBySlug(currentSlug);
+
+    if (id !== this.loadId) return; // A newer load was triggered — discard.
+
+    this.post.set(post);
+    this.error.set(error);
+    this.loading.set(false);
+  }
+
   formatDate(dateKey: string): string {
-    if (dateKey.length !== 8) return dateKey;
+    if (!dateKey || dateKey.length !== 8) return dateKey || '';
     const year = dateKey.slice(0, 4);
     const month = dateKey.slice(4, 6);
     const day = dateKey.slice(6, 8);
     return `${year}.${month}.${day}`;
-  }
-
-  parseBody(body: string): readonly string[] {
-    return body.split('\n\n').filter(p => p.trim());
   }
 }

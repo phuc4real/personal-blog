@@ -1,44 +1,8 @@
 [
   {
-    "slug": "neon-blast",
-    "title": "Neon Blast",
-    "dateKey": "20260104",
-    "preview": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam."
-  },
-  {
-    "slug": "purple-shift",
-    "title": "Purple Shift",
-    "dateKey": "20260102",
-    "preview": "Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos."
-  },
-  {
-    "slug": "chromed-rain",
-    "title": "Chromed Rain",
-    "dateKey": "20260101",
-    "preview": "The city doesn't sleep; it just changes clock speeds."
-  },
-  {
-    "slug": "midnight-arcade",
-    "title": "Midnight Arcade",
-    "dateKey": "20251229",
-    "preview": "Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet."
-  },
-  {
-    "slug": "terminal-dreams",
-    "title": "Terminal Dreams",
-    "dateKey": "20251222",
-    "preview": "I write best when the cursor blinks like a heartbeat."
-  },
-  {
-    "slug": "signal-noise",
-    "title": "Signal / Noise",
-    "dateKey": "20251210",
-    "preview": "Most of what we ship is noise: extra layers, extra clicks, extra bytes."
-  },
-  {
-    "slug": "violet-circuit",
-    "title": "Violet Circuit",
-    "dateKey": "20251130",
-    "preview": "A theme is a contract between mood and readability."
+    "slug": "hello-world",
+    "title": " Hello world",
+    "dateKey": "20260105",
+    "preview": "Hello world, this is my first post!"
   }
 ]

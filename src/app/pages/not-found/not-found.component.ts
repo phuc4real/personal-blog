@@ -1,21 +1,22 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PageShellComponent } from '../../shared/page-shell/page-shell.component';
+import { RevealOnScrollDirective } from '../../shared/directives/reveal-on-scroll.directive';
 
 @Component({
   selector: 'app-not-found',
-  imports: [PageShellComponent, RouterLink],
+  imports: [PageShellComponent, RouterLink, RevealOnScrollDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-page-shell>
       <article class="not-found">
-        <h1 class="title">404</h1>
-        <p class="subtitle">Page not found</p>
-        <p class="text">
+        <h1 class="title" appRevealOnScroll>404</h1>
+        <p class="subtitle" appRevealOnScroll [revealDelay]="80">Page not found</p>
+        <p class="text" appRevealOnScroll [revealDelay]="140">
           The page you're looking for doesn't exist or has been moved.
         </p>
         
-        <nav class="nav-links" aria-label="Navigation options">
+        <nav class="nav-links" aria-label="Navigation options" appRevealOnScroll [revealDelay]="200">
           <a class="link" routerLink="/">back to home</a>
           <a class="link" routerLink="/about">about</a>
           <a class="link" routerLink="/project">projects</a>
@@ -51,13 +52,14 @@ import { PageShellComponent } from '../../shared/page-shell/page-shell.component
     }
 
     .text {
-      font-size: 14px;
+      font-size: var(--text-sm);
       line-height: 1.7;
       color: var(--text-magenta-medium);
       margin: 0 0 var(--space-11);
       max-width: 400px;
       margin-left: auto;
       margin-right: auto;
+      overflow-wrap: break-word;
     }
 
     .nav-links {
@@ -69,14 +71,16 @@ import { PageShellComponent } from '../../shared/page-shell/page-shell.component
     }
 
     .link {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       border: 1px solid var(--purple-muted);
       background: transparent;
       color: var(--purple-muted);
-      font-size: 12px;
+      font-size: var(--text-xs);
       font-weight: 900;
       letter-spacing: 0.8px;
-      padding: 10px 16px;
+      padding: var(--space-3) var(--space-6);
       min-height: 44px;
       text-decoration: none;
       text-transform: lowercase;
@@ -94,6 +98,10 @@ import { PageShellComponent } from '../../shared/page-shell/page-shell.component
       border-color: var(--neon-magenta);
       box-shadow: 0 0 12px var(--glow-magenta);
       transform: translateY(-1px);
+    }
+
+    .link:active {
+      transform: translateY(0);
     }
 
     @media (max-width: 480px) {

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { PageShellComponent } from '../../shared/page-shell/page-shell.component';
+import { RevealOnScrollDirective } from '../../shared/directives/reveal-on-scroll.directive';
 
 type ProjectLink = {
   readonly name: string;
@@ -9,11 +10,11 @@ type ProjectLink = {
 
 @Component({
   selector: 'app-project',
-  imports: [PageShellComponent],
+  imports: [PageShellComponent, RevealOnScrollDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-page-shell>
-      <article class="page">
+      <article class="page" appRevealOnScroll>
         <h1 class="title">project</h1>
 
         <p class="text">
@@ -23,7 +24,7 @@ type ProjectLink = {
         @if (projects.length > 0) {
           <ul class="list" aria-label="Project links">
             @for (project of projects; track project.url) {
-              <li class="item">
+              <li class="item" appRevealOnScroll [revealDelay]="140 + ($index * 90)">
                 <a class="link" [href]="project.url" target="_blank" rel="noopener">
                   {{ project.name }}
                 </a>
@@ -32,7 +33,7 @@ type ProjectLink = {
             }
           </ul>
         } @else {
-          <div class="empty-state">
+          <div class="empty-state" appRevealOnScroll [revealDelay]="140">
             <div class="empty-icon" aria-hidden="true">
               <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                 <rect x="2" y="7" width="20" height="14" rx="2" />
@@ -54,19 +55,19 @@ type ProjectLink = {
     .page { max-width: var(--content-max); }
 
     .title {
-      font-size: clamp(1.75rem, 4vw + 1rem, 2.125rem); /* Fluid 28px-34px */
+      font-size: clamp(1.75rem, 4vw + 1rem, 2.125rem);
       font-weight: 950;
       color: var(--neon-magenta);
-      margin: 0 0 18px;
+      margin: 0 0 var(--space-7);
       letter-spacing: 0.8px;
       line-height: 1.2;
     }
 
     .text {
-      font-size: 14px;
+      font-size: var(--text-sm);
       line-height: 1.9;
       color: var(--text-magenta-medium);
-      margin: 0 0 14px;
+      margin: 0 0 var(--space-5);
     }
 
     .list {
@@ -74,17 +75,25 @@ type ProjectLink = {
       margin: 0;
       padding: 0;
       display: grid;
-      gap: 12px;
+      gap: var(--space-4);
     }
 
     .item {
       border: 1px solid var(--purple-muted);
-      padding: 12px;
-      transition: border-color var(--dur-ambient) var(--ease-atmospheric);
+      padding: var(--space-4);
+      transition: border-color var(--dur-ambient) var(--ease-atmospheric),
+                  box-shadow var(--dur-ambient) var(--ease-atmospheric),
+                  transform var(--dur-ambient) var(--ease-atmospheric);
     }
 
     .item:hover {
       border-color: var(--neon-magenta);
+      box-shadow: 0 12px 24px color-mix(in srgb, var(--bg-black) 82%, transparent);
+      transform: translate3d(0, -3px, 0);
+    }
+
+    .item:active {
+      transform: translate3d(0, -1px, 0);
     }
 
     .link {
@@ -107,8 +116,8 @@ type ProjectLink = {
     }
 
     .desc {
-      margin: 8px 0 0;
-      font-size: 14px;
+      margin: var(--space-2) 0 0;
+      font-size: var(--text-sm);
       line-height: 1.8;
       color: var(--text-cyan-medium);
       overflow-wrap: break-word;
@@ -132,6 +141,7 @@ type ProjectLink = {
       color: var(--purple-muted);
       margin: 0 0 var(--space-6);
       opacity: 0.6;
+      animation: project-float 3.6s var(--ease-atmospheric) infinite alternate;
     }
 
     .empty-title {
@@ -145,9 +155,19 @@ type ProjectLink = {
 
     .empty-message {
       color: var(--text-magenta-medium);
-      font-size: 14px;
+      font-size: var(--text-sm);
       line-height: 1.7;
       margin: 0;
+    }
+
+    @keyframes project-float {
+      from {
+        transform: translate3d(0, 0, 0);
+      }
+
+      to {
+        transform: translate3d(0, -5px, 0);
+      }
     }
   `
 })

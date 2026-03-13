@@ -1,17 +1,18 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PageShellComponent } from '../../shared/page-shell/page-shell.component';
+import { RevealOnScrollDirective } from '../../shared/directives/reveal-on-scroll.directive';
 import { BlogService } from '../../shared/services/blog.service';
 
 @Component({
   selector: 'app-home',
-  imports: [PageShellComponent, RouterLink],
+  imports: [PageShellComponent, RouterLink, RevealOnScrollDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-page-shell>
       <div class="home-content">
         @if (showWelcome()) {
-          <div class="welcome-banner" role="banner">
+          <div class="welcome-banner motion-scan" role="banner" appRevealOnScroll [revealDistance]="'24px'">
             <div class="welcome-content">
               <h2 class="welcome-title">welcome to the lab</h2>
               <p class="welcome-text">
@@ -54,8 +55,8 @@ import { BlogService } from '../../shared/services/blog.service';
 
         @if (loadingState() === 'success') {
           @if (posts().length === 0) {
-            <div class="empty-state">
-              <div class="empty-icon" aria-hidden="true">
+            <div class="empty-state" appRevealOnScroll [revealDelay]="120">
+              <div class="empty-icon motion-float" aria-hidden="true">
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                   <rect x="3" y="3" width="18" height="18" rx="2" />
                   <line x1="9" y1="9" x2="15" y2="9" />
@@ -78,7 +79,7 @@ import { BlogService } from '../../shared/services/blog.service';
               </div>
             </div>
           } @else {
-            <section class="whats-new" aria-label="whats-new">
+            <section class="whats-new" aria-label="What's new" appRevealOnScroll [revealDelay]="80">
               <h1 class="info-title">what's new</h1>
               <ul class="info-list" aria-label="Top posts">
                 @for (post of topPosts(); track post.slug) {
@@ -97,7 +98,7 @@ import { BlogService } from '../../shared/services/blog.service';
               <h2 class="article-title">new post</h2>
 
               @for (post of posts(); track post.slug; let isFirst = $first) {
-                <article class="event" [id]="post.slug" aria-label="Event post">
+                <article class="event" [id]="post.slug" [attr.aria-label]="'Post: ' + post.title" appRevealOnScroll [revealDelay]="140 + ($index * 70)">
                   <p class="event-date">{{ formatDate(post.dateKey) }}</p>
                   <h3 class="event-title">{{ post.title }}</h3>
 
@@ -118,7 +119,7 @@ import { BlogService } from '../../shared/services/blog.service';
               }
             </section>
 
-            <aside class="discover-more" aria-label="Explore more content">
+            <aside class="discover-more" aria-label="Explore more content" appRevealOnScroll [revealDelay]="220">
               <p class="discover-text">Explore more:</p>
               <nav class="discover-nav">
                 <a class="discover-link" routerLink="/project">
@@ -165,7 +166,7 @@ import { BlogService } from '../../shared/services/blog.service';
     }
 
     .welcome-title {
-      font-size: 18px;
+      font-size: var(--text-lg);
       font-weight: 950;
       color: var(--neon-magenta);
       margin: 0 0 var(--space-3);
@@ -174,20 +175,22 @@ import { BlogService } from '../../shared/services/blog.service';
     }
 
     .welcome-text {
-      font-size: 14px;
+      font-size: var(--text-sm);
       line-height: 1.7;
       color: var(--text-magenta-medium);
       margin: 0 0 var(--space-5);
+      overflow-wrap: break-word;
     }
 
     .welcome-actions {
       display: flex;
       gap: var(--space-4);
+      align-items: center;
     }
 
     .welcome-link {
       color: var(--accent-cyan);
-      font-size: 13px;
+      font-size: var(--text-xs);
       font-weight: 700;
       letter-spacing: 0.4px;
       text-decoration: underline;
@@ -214,7 +217,7 @@ import { BlogService } from '../../shared/services/blog.service';
       border: 1px solid var(--purple-muted);
       background: transparent;
       color: var(--purple-muted);
-      font-size: 16px;
+      font-size: var(--text-md);
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -235,18 +238,18 @@ import { BlogService } from '../../shared/services/blog.service';
 
     .whats-new {
       border: 1px solid var(--border-purple-soft);
-      padding: 10px 16px;
+      padding: var(--space-3) var(--space-6);
       max-width: var(--content-max);
-      margin: 0 0 26px;
+      margin: 0 0 var(--space-10);
     }
 
     .info-title {
-      font-size: 14px;
+      font-size: var(--text-sm);
       letter-spacing: 0.88px;
       text-transform: lowercase;
       font-weight: 900;
       color: var(--neon-magenta);
-      margin: 0 0 4px;
+      margin: 0 0 var(--space-1);
     }
 
     .info-list {
@@ -254,77 +257,66 @@ import { BlogService } from '../../shared/services/blog.service';
       margin: 0;
       padding: 0;
       display: grid;
-      gap: 6px;
+      gap: var(--space-1);
     }
 
     .info-link {
       color: var(--text-magenta-bright);
-      font-size: 11px;
+      font-size: var(--text-xs);
       letter-spacing: 0.3px;
       cursor: pointer;
+      display: block;
+      padding: var(--space-1) var(--space-2);
     }
 
-    .info-link:hover {
+    .info-link:hover,
+    .info-link:focus-visible {
       background: var(--neon-magenta);
       color: var(--bg-black);
     }
 
+    .info-item {
+      transition: transform var(--dur-fast) var(--ease-atmospheric);
+    }
+
+    .info-item:hover {
+      transform: translateX(2px);
+    }
+
+    @media (pointer: coarse) {
+      .info-link {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        padding: var(--space-2) var(--space-2);
+      }
+    }
+
     .article-title {
-      font-size: 16px;
+      font-size: var(--text-md);
       font-weight: 900;
       letter-spacing: 0.9px;
       text-transform: lowercase;
       color: var(--neon-magenta);
-      margin: 0 0 14px;
+      margin: 0 0 var(--space-5);
     }
 
     .event {
-      max-width: var(--content-max);
-      margin: 0 0 40px;
-    }
-
-    .event-date {
-      margin: 0 0 6px;
-      font-size: 12px;
-      color: var(--text-magenta-soft);
-      letter-spacing: 0.6px;
-    }
-
-    .event-title {
-      margin: 0 0 14px;
-      font-size: clamp(1.75rem, 4vw + 1rem, 2.125rem); /* Fluid 28px-34px */
-      font-weight: 950;
-      color: var(--neon-magenta);
-      line-height: 1.1;
-      letter-spacing: 0.8px;
-    }
-
-    .event-poster {
-      margin: 0 0 14px;
-      border: 1px solid var(--border-divider-soft);
-      background: var(--bg-black);
-    }
-
-    .event-poster img {
-      display: block;
-      width: 100%;
-      height: auto;
-    }
-
-    .event-body {
-      font-size: 14px;
+      transform-origin: top left;
     }
 
     .more {
-      display: inline-block;
-      margin-top: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: var(--space-3);
       border: 1px solid var(--border-divider-strong);
       background: transparent;
       color: var(--purple-muted);
-      font-size: 11px;
+      font-size: var(--text-xs);
       font-weight: 900;
       letter-spacing: 1px;
-      padding: 8px 12px;
+      padding: var(--space-2) var(--space-4);
       cursor: pointer;
       text-transform: uppercase;
       text-decoration: none;
@@ -332,7 +324,8 @@ import { BlogService } from '../../shared/services/blog.service';
       transition: color var(--dur-ambient) var(--ease-atmospheric),
                   background-color var(--dur-ambient) var(--ease-atmospheric),
                   border-color var(--dur-ambient) var(--ease-atmospheric),
-                  box-shadow var(--dur-ambient) var(--ease-atmospheric);
+                  box-shadow var(--dur-ambient) var(--ease-atmospheric),
+                  transform var(--dur-ambient) var(--ease-atmospheric);
     }
 
     .more:hover,
@@ -341,12 +334,17 @@ import { BlogService } from '../../shared/services/blog.service';
       color: var(--bg-black);
       border-color: var(--neon-magenta);
       box-shadow: 0 0 12px var(--glow-magenta);
+      transform: translateY(-1px);
+    }
+
+    .more:active {
+      transform: translateY(0);
     }
 
     .post-blur {
       max-width: var(--content-max);
       height: 1px;
-      margin: 12px 0 24px;
+      margin: var(--space-4) 0 var(--space-9);
       background: linear-gradient(
         90deg,
         transparent,
@@ -357,86 +355,33 @@ import { BlogService } from '../../shared/services/blog.service';
       opacity: 0.9;
     }
 
-    .event-line {
-      margin: 0 0 4px;
-      font-size: 12px;
-      letter-spacing: 0.4px;
-      color: var(--text-magenta-bright);
+    .info-post-title {
+      overflow-wrap: break-word;
+      hyphens: auto;
     }
 
-    .event-divider {
-      height: 1px;
-      margin: 10px 0 12px;
-      background: var(--divider-muted);
-    }
-
-    .event-paragraph {
-      margin-bottom: 12px;
-    }
-
-    .section-text {
-      font-size: 14px;
-      line-height: 1.9;
-      color: var(--text-magenta-medium);
-      margin-bottom: 16px;
+    .info-separator {
+      user-select: none;
     }
 
     @media (max-width: 768px) {
-      .event-title {
-        font-size: 26px;
-      }
-
       .whats-new {
-        padding: 10px 12px;
-      }
-
-      .event-body {
-        font-size: 14px;
+        padding: var(--space-3) var(--space-4);
       }
     }
 
-    /* State styles */
-    .loading-state,
-    .error-state,
-    .empty-state {
-      max-width: var(--content-max);
-      padding: var(--space-11) var(--space-6);
-      text-align: center;
-    }
-
-    .loading-text {
-      color: var(--text-magenta-medium);
-      font-size: 14px;
-      animation: pulse 1.5s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .loading-text {
-        animation: none;
+    @media (max-width: 360px) {
+      .welcome-banner {
+        padding: var(--space-5) var(--space-4);
       }
-    }
 
-    .error-title,
-    .empty-title {
-      font-size: clamp(1.5rem, 3vw + 1rem, 1.875rem);
-      font-weight: 950;
-      color: var(--neon-magenta);
-      margin: 0 0 12px;
-      letter-spacing: 0.6px;
-      text-transform: lowercase;
-    }
+      .welcome-content {
+        padding-right: var(--space-11);
+      }
 
-    .error-message,
-    .empty-message {
-      color: var(--text-magenta-medium);
-      font-size: 14px;
-      line-height: 1.7;
-      margin: 0 0 18px;
+      .discover-more {
+        padding: var(--space-5);
+      }
     }
 
     .empty-state {
@@ -465,7 +410,7 @@ import { BlogService } from '../../shared/services/blog.service';
 
     .empty-link {
       color: var(--accent-cyan);
-      font-size: 13px;
+      font-size: var(--text-xs);
       font-weight: 700;
       letter-spacing: 0.4px;
       text-decoration: underline;
@@ -485,50 +430,7 @@ import { BlogService } from '../../shared/services/blog.service';
 
     .empty-separator {
       color: var(--purple-muted);
-      font-size: 12px;
-    }
-
-    .retry-button {
-      display: inline-block;
-      border: 1px solid var(--purple-muted);
-      background: transparent;
-      color: var(--purple-muted);
-      font-size: 12px;
-      font-weight: 900;
-      letter-spacing: 1px;
-      padding: 10px 16px;
-      cursor: pointer;
-      text-transform: uppercase;
-      min-height: 44px;
-      transition: color var(--dur-ambient) var(--ease-atmospheric),
-                  background-color var(--dur-ambient) var(--ease-atmospheric),
-                  border-color var(--dur-ambient) var(--ease-atmospheric),
-                  box-shadow var(--dur-ambient) var(--ease-atmospheric);
-    }
-
-    .retry-button:hover,
-    .retry-button:focus-visible {
-      background: var(--neon-magenta);
-      color: var(--bg-black);
-      border-color: var(--neon-magenta);
-      box-shadow: 0 0 12px var(--glow-magenta);
-    }
-
-    .retry-button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    /* Text overflow handling */
-    .info-post-title,
-    .event-title {
-      overflow-wrap: break-word;
-      word-wrap: break-word;
-      hyphens: auto;
-    }
-
-    .info-separator {
-      user-select: none;
+      font-size: var(--text-xs);
     }
 
     /* Discover more section */
@@ -545,7 +447,7 @@ import { BlogService } from '../../shared/services/blog.service';
     }
 
     .discover-text {
-      font-size: 12px;
+      font-size: var(--text-xs);
       font-weight: 700;
       letter-spacing: 0.6px;
       text-transform: uppercase;
@@ -563,6 +465,7 @@ import { BlogService } from '../../shared/services/blog.service';
       flex-direction: column;
       gap: 2px;
       padding: var(--space-3) var(--space-4);
+      min-height: 44px;
       border-left: 2px solid var(--purple-muted);
       transition: border-color var(--dur-ambient) var(--ease-atmospheric),
                   background-color var(--dur-ambient) var(--ease-atmospheric),
@@ -576,17 +479,22 @@ import { BlogService } from '../../shared/services/blog.service';
       transform: translateX(4px);
     }
 
+    .discover-link:active {
+      transform: translateX(2px);
+    }
+
     .discover-label {
-      font-size: 14px;
+      font-size: var(--text-sm);
       font-weight: 800;
       color: var(--accent-cyan);
       letter-spacing: 0.4px;
     }
 
     .discover-desc {
-      font-size: 12px;
+      font-size: var(--text-xs);
       color: var(--text-magenta-medium);
       letter-spacing: 0.2px;
+      overflow-wrap: break-word;
     }
   `]
 })
@@ -620,7 +528,7 @@ export class HomeComponent {
   }
 
   formatDate(dateKey: string): string {
-    if (dateKey.length !== 8) return dateKey;
+    if (!dateKey || dateKey.length !== 8) return dateKey || '';
     const year = dateKey.slice(0, 4);
     const month = dateKey.slice(4, 6);
     const day = dateKey.slice(6, 8);

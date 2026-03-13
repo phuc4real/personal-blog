@@ -14,11 +14,16 @@ export interface BlogPost extends PostMetadata {
 }
 
 export function parseFrontmatter(markdown: string): { metadata: PostMetadata; content: string } {
+  if (!markdown || typeof markdown !== 'string') {
+    return { metadata: { title: 'Untitled Post', dateKey: '' }, content: '' };
+  }
+
   const frontmatterRegex = /^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/;
   const match = markdown.match(frontmatterRegex);
 
   if (!match) {
-    throw new Error('Invalid markdown format: Missing frontmatter');
+    // Graceful degradation: treat entire content as body with no metadata
+    return { metadata: { title: 'Untitled Post', dateKey: '' }, content: markdown.trim() };
   }
 
   const [, frontmatterRaw, content] = match;
@@ -29,13 +34,15 @@ export function parseFrontmatter(markdown: string): { metadata: PostMetadata; co
     if (colonIndex > -1) {
       const key = line.slice(0, colonIndex).trim();
       const value = line.slice(colonIndex + 1).trim().replace(/^["']|["']$/g, '');
-      metadata[key] = value;
+      if (key && value) {
+        metadata[key] = value;
+      }
     }
   });
 
   return {
     metadata: {
-      title: metadata['title'] || '',
+      title: (metadata['title'] || 'Untitled Post').slice(0, 500),
       dateKey: metadata['dateKey'] || '',
     },
     content: content.trim(),
